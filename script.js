@@ -1,20 +1,25 @@
-//your JS code here. If required.
 // Fetch the CSV file asynchronously
 fetch("./students.json")
-  .then(response => response.text())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.text();
+  })
   .then(data => {
+    // Split into rows and remove any empty trailing lines
     const lines = data.trim().split("\n");
 
-    // Remove header row
+    // Remove and store the header row (e.g., "name,marks")
     const headers = lines.shift().split(",");
 
     const students = lines.map(line => {
       const values = line.split(",");
+      
       return {
         name: values[0],
-        marks: values[1]
-          .split("|")
-          .map(Number)
+        // Splits the pipe-delimited marks string into an array of numbers
+        marks: values[1].split("|").map(Number)
       };
     });
 
